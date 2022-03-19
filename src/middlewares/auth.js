@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken")
 const blogModel = require("../models/blogModel")
 
 
-const authentication =  function (req, res, next) {
+const authentication = function (req, res, next) {
     try {
         let token = req.headers["x-api-key"]
         if (!token)
@@ -25,32 +25,30 @@ const authentication =  function (req, res, next) {
 
 
 
-    const authorization = function(req, res, next) {
-    
-        try{
-            let token = req.headers["x-api-key"]
-            if(!token)
-            return res.status(401).send({status: false, msg:"Token not present"})
-        
-            let decodedToken = jwt.verify(token,"satyam566")
-            if(!decodedToken)
-            return res.status(401).send({status:false,msg:"Token is invalid"})
-        
-            let userId = req.query.authorId
-            let userLoggedIn = decodedToken.userId
-        
-            if(userId == userLoggedIn )
-            {
-                res.status(403).send({status : false, msg : "User is not Allowed to modify the request"})
-            } next()
-        }
-            catch(error)
-            {
-                res.status(500).send({status: false ,msg : error.message})
-            }
-    
-        
+const authorization = function (req, res, next) {
+
+    try {
+        let token = req.headers["x-api-key"]
+        if (!token)
+            return res.status(401).send({ status: false, msg: "Token not present" })
+
+        let decodedToken = jwt.verify(token, "satyam566")
+        if (!decodedToken)
+            return res.status(401).send({ status: false, msg: "Token is invalid" })
+
+        let userToBeModified = req.params.authorId
+        let userLoggedIn = decodedToken.authorId
+        if (userToBeModified == userLoggedIn)
+
+        return res.status(400).send({status: false, msg:"User is not allowed for logged in"})
+        next()
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
     }
 
-    module.exports.authorization = authorization
-    module.exports.authentication = authentication
+
+}
+
+module.exports.authorization = authorization
+module.exports.authentication = authentication
