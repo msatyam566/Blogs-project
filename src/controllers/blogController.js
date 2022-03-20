@@ -72,7 +72,7 @@ const updateBlog = async function (req, res) {
 
    } catch (err) {
 
-      res.status(400).send({ status: false, msg: err.message })
+      res.status(500).send({ status: false, msg: err.message })
    }
 
 }
@@ -90,14 +90,15 @@ const deletebyId = async function (req, res) {
          res.status(404).send({ status: false, msg: "blog not exist" })
       } else {
          let blogDetails = await blogModel.updateOne({ _id: blogId }, { $set: { isDeleted: true, } }, { new: true })
-         res.status(201).send({status: true, data:deleteblogs, msg: "blog deleted" })
+         res.status(201).send({ status: true, data: deleteblogs, msg: "blog deleted" })
          console.log(blogDetails)
       }
+   
    }
    catch (error) {
-      console.log(error)
-      res.status(500).send({ msg: error.message })
-   }
+   console.log(error)
+   res.status(500).send({ msg: error.message })
+}
 }
 
 const deleteByQuery = async function (req, res) {
@@ -114,7 +115,7 @@ const deleteByQuery = async function (req, res) {
          res.status(404).send({ status: false, msg: "authorId not exist" })
       } else {
          let updatedDetails = await blogModel.findOneAndUpdate({ $or: [{ authorId: authorIds }, { category: categorys }, { tags: { $in: [tag] } }, { subcategory: { $in: [subcategorys] } }] }, { isDeleted: true })
-         res.status(201).send({status: true, msg: "blog deleted " })
+         res.status(201).send({ status: true, msg: "blog deleted " })
          req.body.deletedAt = new Date()
          console.log(updatedDetails)
       }
